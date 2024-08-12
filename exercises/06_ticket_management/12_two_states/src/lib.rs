@@ -16,6 +16,12 @@ pub struct TicketStore {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TicketId(u64);
 
+impl TicketId {
+    pub fn new(id: usize) -> Self {
+        Self(id as u64)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Ticket {
     pub id: TicketId,
@@ -44,8 +50,20 @@ impl TicketStore {
         }
     }
 
-    pub fn add_ticket(&mut self, ticket: Ticket) {
-        self.tickets.push(ticket);
+    pub fn add_ticket(&mut self, draft: TicketDraft) -> TicketId {
+        let id = TicketId::new(self.tickets.len());
+        self.tickets.push(Ticket {
+            id: id,
+            title: draft.title,
+            description: draft.description,
+            status: Status::ToDo,
+        });
+
+        id
+    }
+
+    pub fn get(&self, id: TicketId) -> Option<&Ticket> {
+        return self.tickets.get(id.0 as usize);
     }
 }
 
